@@ -56,9 +56,9 @@ fn format_offset(duration: &Duration) -> String {
     let minutes = duration.num_minutes() % 60;
 
     if minutes == 0 {
-        format!(" ({hours:+}h)")
+        format!("{hours:+}h")
     } else {
-        format!(" ({hours:+}h{}m)", minutes.abs())
+        format!("{hours:+}h{}m", minutes.abs())
     }
 }
 
@@ -88,7 +88,7 @@ fn main() {
 
     for rtz in remote_tzs {
         println!(
-            "{: >tz_width$}: {}{}",
+            "{: >tz_width$}: {} ({})",
             rtz.name,
             rtz.dt.format(&cfg.fmt),
             format_offset(&rtz.offset_from_local),
