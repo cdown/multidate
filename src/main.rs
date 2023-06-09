@@ -5,7 +5,10 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Config {
-    #[arg(help = "Remote timezone(s) to print, for example, Europe/London")]
+    #[arg(
+        help = "Remote timezone(s) to print, for example, Europe/London",
+        required = true
+    )]
     tz: Vec<Tz>,
 
     #[arg(
@@ -65,12 +68,18 @@ fn main() {
 
     remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
 
-    println!("Local: {}", local.format(&cfg.fmt));
+    let tz_width = remote_tzs
+        .iter()
+        .map(|rtz| rtz.tz.to_string().len())
+        .max()
+        .unwrap_or(0);
+
+    println!("{: >tz_width$}: {}\n", "Local", local.format(&cfg.fmt));
 
     for rtz in remote_tzs {
         println!(
-            "{}: {}{}",
-            rtz.tz,
+            "{: >tz_width$}: {}{}",
+            rtz.tz.to_string(),
             rtz.dt.format(&cfg.fmt),
             format_offset(&rtz.offset_from_local),
         );
