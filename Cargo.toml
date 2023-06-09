@@ -15,4 +15,4 @@ license = "MIT"
 anyhow = { default-features = false, version = "1.0.71" }
 chrono = { features = ["clock"], default-features = false, version = "0.4.26" }
 chrono-tz = { default-features = false, version = "0.8.2" }
-clap = { version = "4.3.2", features = ["derive", "std"], default-features = false }
+clap = { version = "4.3.2", default-features = false, features = ["std", "derive", "help"] }
