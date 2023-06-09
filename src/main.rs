@@ -65,7 +65,7 @@ fn main() {
 
     remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
 
-    println!("Local: {}", local.format(&cfg.fmt),);
+    println!("Local: {}", local.format(&cfg.fmt));
 
     for rtz in remote_tzs {
         println!(
