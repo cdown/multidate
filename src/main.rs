@@ -31,7 +31,7 @@ fn format_offset(duration: &Duration) -> String {
     } else if minutes == 0 {
         format!(" ({hours:+}h)")
     } else {
-        format!(" ({hours:+}h{minutes:+02}m)")
+        format!(" ({hours:+}h{}m)", minutes.abs())
     }
 }
 
