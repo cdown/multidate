@@ -26,6 +26,24 @@ struct RemoteTz {
     dt: DateTime<Tz>,
 }
 
+impl RemoteTz {
+    fn new(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> Self {
+        let offset_from_local_secs = tz
+            .offset_from_utc_datetime(&local.naive_utc())
+            .fix()
+            .local_minus_utc()
+            - local_offset_secs;
+        let offset_from_local = Duration::seconds(offset_from_local_secs.into());
+        let dt = local.with_timezone(&tz);
+
+        Self {
+            tz,
+            offset_from_local,
+            dt,
+        }
+    }
+}
+
 fn format_offset(duration: &Duration) -> String {
     let hours = duration.num_hours();
     let minutes = duration.num_minutes() % 60;
@@ -37,22 +55,6 @@ fn format_offset(duration: &Duration) -> String {
     }
 }
 
-fn get_remote_tz(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> RemoteTz {
-    let offset_from_local_secs = tz
-        .offset_from_utc_datetime(&local.naive_utc())
-        .fix()
-        .local_minus_utc()
-        - local_offset_secs;
-    let offset_from_local = Duration::seconds(offset_from_local_secs.into());
-    let dt = local.with_timezone(&tz);
-
-    RemoteTz {
-        tz,
-        offset_from_local,
-        dt,
-    }
-}
-
 fn main() {
     let cfg = Config::parse();
     let local: DateTime<Local> = Local::now();
@@ -61,7 +63,7 @@ fn main() {
     let mut remote_tzs: Vec<_> = cfg
         .tz
         .into_iter()
-        .map(|tz| get_remote_tz(&local, local_offset, tz))
+        .map(|tz| RemoteTz::new(&local, local_offset, tz))
         .collect();
 
     remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
