@@ -1,0 +1,21 @@
+# On releases, upload the binary
+
+jobs:
+  build-upload:
+    name: Build and upload release
+    runs-on: ubuntu-20.04  # use older one for wider glibc compat
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+      - run: gh release upload ${{ github.ref_name }} target/release/multidate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
