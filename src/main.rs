@@ -28,7 +28,7 @@ struct Config {
 }
 
 struct ExplicitTz {
-    tz: Tz,
+    name: String,
     offset_from_local: Duration,
     dt: DateTime<Tz>,
 }
@@ -44,7 +44,7 @@ impl ExplicitTz {
         let dt = local.with_timezone(&tz);
 
         Self {
-            tz,
+            name: tz.to_string(),
             offset_from_local,
             dt,
         }
@@ -80,7 +80,7 @@ fn main() {
     } else {
         remote_tzs
             .iter()
-            .map(|rtz| rtz.tz.to_string().len())
+            .map(|rtz| rtz.name.len())
             .max()
             .unwrap_or(0)
     };
@@ -89,7 +89,7 @@ fn main() {
     for rtz in remote_tzs {
         println!(
             "{: >tz_width$}: {}{}",
-            rtz.tz.to_string(),
+            rtz.name,
             rtz.dt.format(&cfg.fmt),
             format_offset(&rtz.offset_from_local),
         );
