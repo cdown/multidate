@@ -30,9 +30,7 @@ fn format_offset(duration: &Duration) -> String {
     let hours = duration.num_hours();
     let minutes = duration.num_minutes() % 60;
 
-    if hours == 0 && minutes == 0 {
-        "".to_string()
-    } else if minutes == 0 {
+    if minutes == 0 {
         format!(" ({hours:+}h)")
     } else {
         format!(" ({hours:+}h{}m)", minutes.abs())
