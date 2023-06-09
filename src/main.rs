@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Local, Offset, TimeZone, Utc};
+use chrono::{DateTime, Duration, Local, Offset, TimeZone};
 use chrono_tz::Tz;
 use clap::Parser;
 
@@ -38,7 +38,7 @@ fn format_offset(duration: &Duration) -> String {
 
 fn get_remote_tz(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> RemoteTz {
     let offset_from_local_secs = tz
-        .offset_from_utc_datetime(&Utc::now().naive_utc())
+        .offset_from_utc_datetime(&local.naive_utc())
         .fix()
         .local_minus_utc()
         - local_offset_secs;
