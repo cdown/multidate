@@ -22,16 +22,16 @@ struct RemoteTz {
     offset_from_local: Duration,
 }
 
-fn format_duration(duration: &Duration) -> String {
+fn format_offset(duration: &Duration) -> String {
     let hours = duration.num_hours();
     let minutes = duration.num_minutes() % 60;
 
     if hours == 0 && minutes == 0 {
         "".to_string()
     } else if minutes == 0 {
-        format!("{:+}h", hours)
+        format!(" ({hours:+}h)")
     } else {
-        format!("{:+}h{:+02}m", hours, minutes)
+        format!(" ({hours:+}h{minutes:+02}m)")
     }
 }
 
@@ -64,10 +64,10 @@ fn main() {
 
     for rtz in remote_tzs {
         println!(
-            "{}: {} {}",
+            "{}: {}{}",
             rtz.tz,
             local.with_timezone(&rtz.tz).format(&cfg.fmt),
-            format_duration(&rtz.offset_from_local),
+            format_offset(&rtz.offset_from_local),
         );
     }
 }
