@@ -20,6 +20,7 @@ struct Config {
 struct RemoteTz {
     tz: Tz,
     offset_from_local: Duration,
+    dt: DateTime<Tz>,
 }
 
 fn format_offset(duration: &Duration) -> String {
@@ -35,17 +36,19 @@ fn format_offset(duration: &Duration) -> String {
     }
 }
 
-fn get_remote_tz(local_offset_secs: i32, tz: Tz) -> RemoteTz {
+fn get_remote_tz(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> RemoteTz {
     let offset_from_local_secs = tz
         .offset_from_utc_datetime(&Utc::now().naive_utc())
         .fix()
         .local_minus_utc()
         - local_offset_secs;
     let offset_from_local = Duration::seconds(offset_from_local_secs.into());
+    let dt = local.with_timezone(&tz);
 
     RemoteTz {
         tz,
         offset_from_local,
+        dt,
     }
 }
 
@@ -54,11 +57,13 @@ fn main() {
     let local: DateTime<Local> = Local::now();
     let local_offset = local.offset().fix().local_minus_utc();
 
-    let remote_tzs: Vec<_> = cfg
+    let mut remote_tzs: Vec<_> = cfg
         .tz
         .into_iter()
-        .map(|tz| get_remote_tz(local_offset, tz))
+        .map(|tz| get_remote_tz(&local, local_offset, tz))
         .collect();
+
+    remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
 
     println!("Local: {}", local.format(&cfg.fmt),);
 
@@ -66,7 +71,7 @@ fn main() {
         println!(
             "{}: {}{}",
             rtz.tz,
-            local.with_timezone(&rtz.tz).format(&cfg.fmt),
+            rtz.dt.format(&cfg.fmt),
             format_offset(&rtz.offset_from_local),
         );
     }
