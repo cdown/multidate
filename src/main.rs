@@ -20,13 +20,13 @@ struct Config {
     fmt: String,
 }
 
-struct RemoteTz {
+struct ExplicitTz {
     tz: Tz,
     offset_from_local: Duration,
     dt: DateTime<Tz>,
 }
 
-impl RemoteTz {
+impl ExplicitTz {
     fn new(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> Self {
         let offset_from_local_secs = tz
             .offset_from_utc_datetime(&local.naive_utc())
@@ -63,7 +63,7 @@ fn main() {
     let mut remote_tzs: Vec<_> = cfg
         .tz
         .into_iter()
-        .map(|tz| RemoteTz::new(&local, local_offset, tz))
+        .map(|tz| ExplicitTz::new(&local, local_offset, tz))
         .collect();
 
     remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
