@@ -18,6 +18,13 @@ struct Config {
         default_value = "%a %F %H:%M"
     )]
     fmt: String,
+
+    #[arg(
+        long,
+        help = "Do not right align timezone names",
+        default_value = "false"
+    )]
+    no_align: bool,
 }
 
 struct ExplicitTz {
@@ -68,12 +75,15 @@ fn main() {
 
     remote_tzs.sort_by_key(|rtz| rtz.dt.naive_local());
 
-    let tz_width = remote_tzs
-        .iter()
-        .map(|rtz| rtz.tz.to_string().len())
-        .max()
-        .unwrap_or(0);
-
+    let tz_width = if cfg.no_align {
+        0
+    } else {
+        remote_tzs
+            .iter()
+            .map(|rtz| rtz.tz.to_string().len())
+            .max()
+            .unwrap_or(0)
+    };
     println!("{: >tz_width$}: {}\n", "Local", local.format(&cfg.fmt));
 
     for rtz in remote_tzs {
