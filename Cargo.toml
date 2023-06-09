@@ -2,6 +2,14 @@
 name = "multidate"
 version = "0.1.0"
 edition = "2021"
+authors = ["Chris Down <chris@chrisdown.name>"]
+description = "Print multiple timezones' dates/times with offsets from the local time."
+repository = "https://github.com/cdown/multidate"
+readme = "README.md"
+keywords = ["date", "timezone"]
+categories = ["command-line-utilities"]
+license = "MIT"
+
 
 [dependencies]
 anyhow = { default-features = false, version = "1.0.71" }
