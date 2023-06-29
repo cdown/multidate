@@ -1,15 +1,16 @@
 use chrono::{DateTime, Duration, Local, Offset, TimeZone};
 use chrono_tz::Tz;
 use clap::Parser;
+use std::str::FromStr;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Config {
-    #[arg(
-        help = "Remote timezone(s) to print, for example, Europe/London",
-        required = true
-    )]
-    tz: Vec<Tz>,
+    /// Remote timezone(s) to print, for example, Europe/London.
+    ///
+    /// A custom name can be provided after an @ symbol, for example, Europe/London@Home.
+    #[arg(required = true)]
+    tz: Vec<TzWithName>,
 
     #[arg(
         short,
@@ -27,6 +28,30 @@ struct Config {
     no_align: bool,
 }
 
+#[derive(Clone, Debug)]
+struct TzWithName {
+    name: String,
+    tz: Tz,
+}
+
+impl FromStr for TzWithName {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Some((tz, name)) = s.split_once('@') {
+            Ok(Self {
+                name: name.to_string(),
+                tz: Tz::from_str(tz)?,
+            })
+        } else {
+            Ok(Self {
+                name: s.to_string(),
+                tz: Tz::from_str(s)?,
+            })
+        }
+    }
+}
+
 struct ExplicitTz {
     name: String,
     offset_from_local: Duration,
@@ -34,17 +59,18 @@ struct ExplicitTz {
 }
 
 impl ExplicitTz {
-    fn new(local: &DateTime<Local>, local_offset_secs: i32, tz: Tz) -> Self {
-        let offset_from_local_secs = tz
+    fn new(local: &DateTime<Local>, local_offset_secs: i32, twn: TzWithName) -> Self {
+        let offset_from_local_secs = twn
+            .tz
             .offset_from_utc_datetime(&local.naive_utc())
             .fix()
             .local_minus_utc()
             - local_offset_secs;
         let offset_from_local = Duration::seconds(offset_from_local_secs.into());
-        let dt = local.with_timezone(&tz);
+        let dt = local.with_timezone(&twn.tz);
 
         Self {
-            name: tz.to_string(),
+            name: twn.name,
             offset_from_local,
             dt,
         }
