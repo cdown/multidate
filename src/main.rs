@@ -26,6 +26,9 @@ struct Config {
         default_value = "false"
     )]
     no_align: bool,
+
+    #[arg(long, help = "Do not print the local time", default_value = "false")]
+    no_local: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -110,7 +113,9 @@ fn main() {
             .max()
             .unwrap_or(0)
     };
-    println!("{: >tz_width$}: {}\n", "Local", local.format(&cfg.fmt));
+    if !cfg.no_local {
+        println!("{: >tz_width$}: {}\n", "Local", local.format(&cfg.fmt));
+    }
 
     for rtz in remote_tzs {
         println!(
