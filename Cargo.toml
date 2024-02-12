@@ -14,5 +14,5 @@ license = "MIT"
 [dependencies]
 anyhow = { default-features = false, version = "1.0.75" }
 chrono = { features = ["clock"], default-features = false, version = "0.4.31" }
-chrono-tz = { default-features = false, version = "0.8.4" }
+chrono-tz = { default-features = false, version = "0.8.6" }
 clap = { version = "4.4.10", default-features = false, features = ["std", "derive", "help"] }
