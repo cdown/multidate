@@ -44,12 +44,12 @@ impl FromStr for TzWithName {
         if let Some((tz, name)) = s.split_once('@') {
             Ok(Self {
                 name: name.to_string(),
-                tz: Tz::from_str(tz)?,
+                tz: Tz::from_str(tz).map_err(|e| e.to_string())?,
             })
         } else {
             Ok(Self {
                 name: s.to_string(),
-                tz: Tz::from_str(s)?,
+                tz: Tz::from_str(s).map_err(|e| e.to_string())?,
             })
         }
     }
