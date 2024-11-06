@@ -13,7 +13,7 @@ rust-version = "1.74"
 
 
 [dependencies]
-anyhow = { default-features = false, version = "1.0.92" }
+anyhow = { default-features = false, version = "1.0.93" }
 chrono = { features = ["clock"], default-features = false, version = "0.4.38" }
 chrono-tz = { default-features = false, version = "0.10.0" }
 clap = { version = "4.5.20", default-features = false, features = ["std", "derive", "help", "error-context"] }
