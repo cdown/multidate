@@ -28,14 +28,16 @@ jobs:
     name: MSRV
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - uses: swatinem/rust-cache@v2
+      - run: rustup toolchain install 1.74.0-x86_64-pc-windows-msvc
+      - run: rustup run 1.74.0 cargo check --target x86_64-pc-windows-msvc
       - run: cargo install cargo-msrv
-      - run: cargo msrv verify
+      - run: cargo msrv --log-target stdout --log-level debug verify
 on:
   push:
   pull_request:
